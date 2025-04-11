@@ -1,0 +1,86 @@
+<!--pages/match-manage/match-manage.wxml-->
+<view class="match-manage-container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <view class="title">比赛管理</view>
+    <view class="add-btn" bindtap="addMatch">
+      <text class="add-icon">+</text>
+      <text class="add-text">添加比赛</text>
+    </view>
+  </view>
+
+  <!-- 日期选择器 -->
+  <scroll-view class="date-selector" scroll-x="true" scroll-into-view="{{currentDateId}}">
+    <view class="date-item {{selectedDate === 'all' ? 'selected' : ''}}" bindtap="selectDate" data-date="all" id="date-all">
+      <text>All</text>
+    </view>
+    <block wx:for="{{dateList}}" wx:key="date">
+      <view class="date-item {{selectedDate === item.date ? 'selected' : ''}}" bindtap="selectDate" data-date="{{item.date}}" id="date-{{item.date}}">
+        <text class="weekday">{{item.weekday}}</text>
+        <text class="date">{{item.displayDate}}</text>
+      </view>
+    </block>
+  </scroll-view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading">加载中...</view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-container" wx:elif="{{error}}">
+    <view class="error-message">{{error}}</view>
+    <button class="retry-btn" bindtap="loadMatches">重试</button>
+  </view>
+
+  <!-- 比赛列表 -->
+  <scroll-view wx:elif="{{filteredMatches.length > 0}}" scroll-y="true" class="match-list">
+    <view class="match-item" wx:for="{{filteredMatches}}" wx:key="_id">
+      <view class="match-content">
+        <!-- 比赛状态标记 -->
+        <view class="match-status {{item.status === '未开始' ? 'status-upcoming' : item.status === '进行中' ? 'status-ongoing' : 'status-finished'}}">
+          {{item.status}}
+        </view>
+        
+        <!-- 比赛信息 -->
+        <view class="match-info">
+          <view class="match-title">{{item.title}}</view>
+          <view class="match-teams">
+            <view class="team {{item.status === '已结束' && item.result.winner === item.team1._id ? 'winner-team' : ''}}">{{item.team1.name}}</view>
+            <view class="vs">VS</view>
+            <view class="team {{item.status === '已结束' && item.result.winner === item.team2._id ? 'winner-team' : ''}}">{{item.team2.name}}</view>
+          </view>
+          
+          <!-- 比赛日期时间 -->
+          <view class="match-time">{{item.date}}</view>
+          
+          <!-- 比赛结果（如果已结束） -->
+          <view class="match-result" wx:if="{{item.status === '已结束' || item.status === 'FINISHED'}}">
+            <view class="result-label">获胜方:</view>
+            <view class="winner">{{item.result.winner === item.team1._id ? item.team1.name : item.team2.name}} 🏆</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 操作按钮 -->
+      <view class="match-actions">
+        <view class="action-btn edit-btn" bindtap="editMatch" data-id="{{item._id}}">
+          <text class="action-text">编辑</text>
+        </view>
+        <view class="action-btn delete-btn" bindtap="deleteMatch" data-id="{{item._id}}">
+          <text class="action-text">删除</text>
+        </view>
+        <view class="action-btn vote-btn" bindtap="goToVote" data-id="{{item._id}}">
+          <text class="action-text">查看</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  
+  <!-- 空状态 -->
+  <view class="empty-container" wx:else>
+    <view class="empty-icon">🏆</view>
+    <view class="empty-message">暂无比赛</view>
+    <view class="empty-desc">点击上方"添加比赛"按钮创建一场新比赛</view>
+  </view>
+</view>

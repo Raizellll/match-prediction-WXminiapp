@@ -1,0 +1,91 @@
+<!--pages/vote/vote.wxml-->
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+  
+  <view class="match-info" wx:elif="{{matchInfo}}">
+    <view class="match-header">
+      <text class="match-title">{{matchInfo.title || '比赛详情'}}</text>
+      <text class="match-time">比赛时间：{{matchInfo.matchTime || '未知时间'}}</text>
+    </view>
+    
+    <view class="teams">
+      <view class="team">
+        <view class="team-logo-container">
+          <view class="team-logo team1-color">{{matchInfo.team1 ? matchInfo.team1.substr(0,1) : 'A'}}</view>
+          <text class="vote-indicator" wx:if="{{votedTeam === matchInfo.team1Id}}">✓</text>
+        </view>
+        <text class="team-name">{{matchInfo.team1 || '队伍A'}}</text>
+        <text class="team-score" wx:if="{{matchInfo.status === '已结束' || matchInfo.status === 'FINISHED'}}">{{team1Score}}</text>
+      </view>
+      <text class="vs">VS</text>
+      <view class="team">
+        <view class="team-logo-container">
+          <view class="team-logo team2-color">{{matchInfo.team2 ? matchInfo.team2.substr(0,1) : 'B'}}</view>
+          <text class="vote-indicator" wx:if="{{votedTeam === matchInfo.team2Id}}">✓</text>
+        </view>
+        <text class="team-name">{{matchInfo.team2 || '队伍B'}}</text>
+        <text class="team-score" wx:if="{{matchInfo.status === '已结束' || matchInfo.status === 'FINISHED'}}">{{team2Score}}</text>
+      </view>
+    </view>
+
+    <view class="vote-progress" wx:if="{{team1Votes || team2Votes}}">
+      <view class="progress-bar">
+        <view class="progress-team1" style="flex: {{team1Votes}}">
+          <text class="vote-count">{{team1Votes}}票</text>
+        </view>
+        <view class="progress-team2" style="flex: {{team2Votes}}">
+          <text class="vote-count">{{team2Votes}}票</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="match-status {{matchInfo.status === '未开始' ? 'not-started' : matchInfo.status === '进行中' ? 'in-progress' : 'finished'}}">
+      <text>{{matchInfo.status}}</text>
+    </view>
+
+    <view class="vote-section" wx:if="{{matchInfo.status !== '已结束' && matchInfo.status !== 'FINISHED'}}">
+      <text class="vote-title">请选择您认为会获胜的队伍：</text>
+      <view class="vote-buttons">
+        <button class="vote-btn {{votedTeam === matchInfo.team1Id ? 'voted' : ''}}" bindtap="submitVote" data-vote="{{matchInfo.team1Id}}" disabled="{{hasVoted}}">
+          选择 {{matchInfo.team1 || '队伍A'}}
+          <text class="check-icon" wx:if="{{votedTeam === matchInfo.team1Id}}">✓</text>
+        </button>
+        <button class="vote-btn {{votedTeam === matchInfo.team2Id ? 'voted' : ''}}" bindtap="submitVote" data-vote="{{matchInfo.team2Id}}" disabled="{{hasVoted}}">
+          选择 {{matchInfo.team2 || '队伍B'}}
+          <text class="check-icon" wx:if="{{votedTeam === matchInfo.team2Id}}">✓</text>
+        </button>
+      </view>
+      
+      <view class="vote-status" wx:if="{{hasVoted}}">
+        <text class="status-text">您已经投票给 <text class="voted-team">{{votedTeam === matchInfo.team1Id ? matchInfo.team1 : matchInfo.team2}}</text></text>
+      </view>
+    </view>
+    
+    <view class="result-section" wx:if="{{matchInfo.status === '已结束' || matchInfo.status === 'FINISHED'}}">
+      <text class="result-title">比赛已结束</text>
+      <text class="result-desc">最终比分: {{team1Score}} - {{team2Score}}</text>
+      <text class="result-winner">胜利方: {{team1Score > team2Score ? matchInfo.team1 : team2Score > team1Score ? matchInfo.team2 : '平局'}}</text>
+    </view>
+    
+    <button class="back-btn" bindtap="goBack">返回比赛列表</button>
+  </view>
+  
+  <!-- 错误状态 -->
+  <view class="error-info" wx:elif="{{!loading && !matchInfo}}">
+    <icon type="warn" size="64"></icon>
+    <text class="error-text">加载比赛信息失败</text>
+    <text class="error-desc">matchId: {{currentMatchId || '未知'}}</text>
+    <text class="error-msg" wx:if="{{errorMessage}}">{{errorMessage}}</text>
+    <button class="back-btn" bindtap="goBack">返回比赛列表</button>
+  </view>
+
+  <!-- 调试信息 -->
+  <view class="debug-info" wx:if="{{debugMode}}">
+    <text class="debug-text">当前比赛ID: {{currentMatchId || '未获取到ID'}}</text>
+    <text class="debug-text">用户ID: {{currentUserId || '未获取到用户ID'}}</text>
+    <text class="debug-text">已投票: {{hasVoted ? '是' : '否'}}</text>
+    <text class="debug-text">投票队伍: {{votedTeam}}</text>
+  </view>
+</view>

@@ -1,0 +1,277 @@
+/* pages/match-manage/match-manage.wxss */
+.match-manage-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f4e8;
+  padding: 20rpx;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* 头部样式 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background-color: #fff;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  background-color: #07c160;
+  color: #fff;
+  font-size: 28rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 30rpx;
+}
+
+.add-icon {
+  font-size: 32rpx;
+  margin-right: 6rpx;
+}
+
+/* 加载和错误状态 */
+.loading-container, .error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.loading {
+  margin-bottom: 20rpx;
+}
+
+.error-message {
+  margin-bottom: 30rpx;
+}
+
+.retry-btn {
+  background-color: #07c160;
+  color: white;
+  font-size: 28rpx;
+  padding: 12rpx 40rpx;
+  border-radius: 30rpx;
+  border: none;
+}
+
+/* 比赛列表 */
+.match-list {
+  flex: 1;
+  padding: 20rpx;
+}
+
+.match-item {
+  margin-bottom: 20rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.match-content {
+  position: relative;
+  padding: 30rpx;
+}
+
+/* 比赛状态 */
+.match-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  color: #fff;
+  border-radius: 0 0 0 10rpx;
+}
+
+.status-upcoming {
+  background-color: #2196f3;
+}
+
+.status-ongoing {
+  background-color: #ff9800;
+}
+
+.status-finished {
+  background-color: #4caf50;
+}
+
+/* 比赛信息 */
+.match-info {
+  padding-top: 10rpx;
+}
+
+.match-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.match-teams {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.team {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.team:last-child {
+  text-align: right;
+}
+
+.vs {
+  margin: 0 20rpx;
+  font-size: 26rpx;
+  color: #999;
+  font-weight: 500;
+}
+
+.match-time {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 15rpx;
+}
+
+/* 比赛结果 */
+.match-result {
+  display: flex;
+  align-items: center;
+  margin-top: 15rpx;
+  padding-top: 15rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.result-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-right: 10rpx;
+}
+
+.winner {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #f57c00;
+}
+
+/* 操作按钮 */
+.match-actions {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+}
+
+.action-btn:not(:last-child) {
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.edit-btn {
+  color: #2196f3;
+}
+
+.delete-btn {
+  color: #f44336;
+}
+
+.vote-btn {
+  color: #4caf50;
+}
+
+/* 空状态 */
+.empty-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 100rpx 30rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-message {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+  font-weight: 500;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #999;
+  text-align: center;
+}
+
+/* 日期选择器 */
+.date-selector {
+  width: 100%;
+  white-space: nowrap;
+  padding: 20rpx 0;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+
+.date-item {
+  display: inline-block;
+  padding: 10rpx 30rpx;
+  margin: 0 10rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+.date-item.selected {
+  background: #1890ff;
+  color: #fff;
+}
+
+.date-item .weekday {
+  font-size: 24rpx;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.date-item .date {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+/* 添加获胜队伍样式 */
+.winner-team {
+  font-weight: bold;
+  color: #e4b400;
+}
+
+.match-teams .team {
+  transition: all 0.3s ease;
+}

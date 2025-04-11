@@ -1,0 +1,301 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.main {
+  width: 100%;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+.test-action {
+  margin: 20rpx 0 30rpx;
+  text-align: center;
+}
+
+.test-btn {
+  background-color: #ff7f50;
+  color: white;
+  font-size: 28rpx;
+  font-weight: bold;
+  border-radius: 8rpx;
+  width: 80%;
+}
+
+.match-list {
+  padding: 20rpx;
+}
+
+.match-item {
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.match-time {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 状态标签样式 */
+.status-badge {
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+}
+
+.status-upcoming {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.status-live {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.status-finished {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.match-content {
+  padding: 20rpx;
+}
+
+.match-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.teams-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.team-logo {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  position: relative;
+}
+
+/* 已投票队伍的标记 */
+.team-logo.voted {
+  box-shadow: 0 0 0 4rpx #ffeb3b;
+}
+
+.vote-mark {
+  position: absolute;
+  right: -10rpx;
+  top: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: #52c41a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: #fff;
+  border: 2rpx solid #fff;
+}
+
+.team1-color {
+  background: #1890ff;
+}
+
+.team2-color {
+  background: #ff7875;
+}
+
+.team-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-top: 8rpx;
+}
+
+.vs {
+  font-size: 28rpx;
+  color: #999;
+  margin: 0 30rpx;
+}
+
+/* 投票进度条 */
+.vote-progress {
+  margin: 20rpx 0;
+}
+
+.progress-bar {
+  display: flex;
+  height: 30rpx;
+  border-radius: 15rpx;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.progress-team1, .progress-team2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20rpx;
+  min-width: 60rpx;
+  transition: flex 0.3s ease;
+}
+
+.progress-team1 {
+  background: #1890ff;
+}
+
+.progress-team2 {
+  background: #ff7875;
+}
+
+.vote-count {
+  font-size: 20rpx;
+  font-weight: bold;
+}
+
+/* 投票按钮 */
+.vote-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  gap: 20rpx;
+}
+
+.vote-btn {
+  flex: 1;
+  font-size: 26rpx;
+  padding: 16rpx 0;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+  color: #333;
+  border: none;
+  text-align: center;
+  line-height: 1;
+}
+
+.vote-btn:active {
+  opacity: 0.8;
+}
+
+.vote-hint {
+  text-align: center;
+  color: #666;
+  font-size: 26rpx;
+  margin-top: 20rpx;
+}
+
+/* 比赛结果 */
+.match-result {
+  text-align: center;
+  margin-top: 20rpx;
+}
+
+.score {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 日期选择器 */
+.date-selector {
+  width: 100%;
+  white-space: nowrap;
+  padding: 20rpx 0;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+
+.date-item {
+  display: inline-block;
+  padding: 10rpx 30rpx;
+  margin: 0 10rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+.date-item.selected {
+  background: #1890ff;
+  color: #fff;
+}
+
+.date-item .weekday {
+  font-size: 24rpx;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.date-item .date {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+/* 添加获胜队伍样式 */
+.winner-team {
+  position: relative;
+}
+
+.winner-team::after {
+  content: "🏆";
+  position: absolute;
+  top: -15rpx;
+  right: -15rpx;
+  font-size: 30rpx;
+}
+
+.winner-highlight {
+  color: #e4b400;
+  font-weight: bold;
+}
+
+.winner-info {
+  margin-top: 10rpx;
+}
+
+.winner-text {
+  font-size: 28rpx;
+  color: #e4b400;
+  font-weight: bold;
+}

@@ -1,0 +1,262 @@
+/* pages/match-edit/match-edit.wxss */
+.match-edit-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f8f8f8;
+}
+
+/* 头部样式 */
+.header {
+  padding: 30rpx;
+  background-color: #fff;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+/* 表单内容区域 */
+.form-scroll {
+  flex: 1;
+  padding: 20rpx 0;
+}
+
+.form-content {
+  padding: 0 30rpx 120rpx 30rpx;
+}
+
+/* 表单项 */
+.form-item {
+  margin-bottom: 30rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03);
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.form-input {
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 160rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  font-size: 30rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* 选择器样式 */
+.picker-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+}
+
+.picker-value {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 表单分区 */
+.form-section {
+  margin-top: 40rpx;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-left: 16rpx;
+  border-left: 8rpx solid #07c160;
+}
+
+/* 单选框样式 */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.radio-text {
+  margin-left: 16rpx;
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 比分输入 */
+.score-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.score-input {
+  width: 120rpx;
+  height: 80rpx;
+  border: 1rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.score-separator {
+  margin: 0 30rpx;
+  font-size: 36rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+/* 结果区域特殊样式 */
+.result-section {
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+  border: 1rpx dashed #ddd;
+}
+
+/* 底部按钮 */
+.action-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.cancel-btn, .save-btn {
+  flex: 1;
+  height: 90rpx;
+  line-height: 90rpx;
+  text-align: center;
+  border-radius: 45rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin: 0 15rpx;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.save-btn {
+  background-color: #07c160;
+  color: #fff;
+}
+
+/* 加载中覆盖层 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  min-width: 200rpx;
+}
+
+.loading-icon {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #f3f3f3;
+  border-top: 4rpx solid #07c160;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 标题输入和建议样式 */
+.title-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.title-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200rpx;
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 16rpx 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:active {
+  background-color: #f8f8f8;
+}

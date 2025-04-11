@@ -1,0 +1,346 @@
+/* pages/vote/vote.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.loading {
+  text-align: center;
+  padding: 40rpx;
+  color: #666;
+}
+
+.match-info {
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.match-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.match-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.match-time {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.teams {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40rpx 0;
+}
+
+.team {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-logo-container {
+  position: relative;
+  margin-bottom: 15rpx;
+}
+
+.vote-indicator {
+  position: absolute;
+  right: -10rpx;
+  top: -10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: #07c160;
+  border-radius: 50%;
+  color: white;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid white;
+}
+
+.team-logo {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 36rpx;
+  margin-bottom: 15rpx;
+}
+
+.team1-color {
+  background-color: #2b85e4;
+}
+
+.team2-color {
+  background-color: #ff7f50;
+}
+
+.team-name {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.team-score {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #ff7f50;
+  margin-top: 10rpx;
+}
+
+.vs {
+  margin: 0 20rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.match-status {
+  text-align: center;
+  padding: 10rpx 0;
+  border-radius: 8rpx;
+  margin: 20rpx 0;
+  background-color: #f0f0f0;
+}
+
+.match-status text {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.not-started .match-status {
+  background-color: #8a8a8a;
+}
+
+.not-started .match-status text {
+  color: #fff;
+}
+
+.in-progress .match-status {
+  background-color: #07c160;
+}
+
+.in-progress .match-status text {
+  color: #fff;
+}
+
+.finished .match-status {
+  background-color: #444444;
+}
+
+.finished .match-status text {
+  color: #fff;
+}
+
+.vote-section {
+  margin-top: 40rpx;
+}
+
+.vote-title {
+  font-size: 30rpx;
+  color: #333;
+  text-align: center;
+  display: block;
+  margin-bottom: 30rpx;
+}
+
+.vote-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.vote-btn {
+  width: 45%;
+  background-color: #f8f8f8;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8rpx;
+  margin: 10rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.vote-btn.voted {
+  background-color: #e6f7ef;
+  color: #07c160;
+  border-color: #07c160;
+}
+
+.vote-btn:disabled {
+  opacity: 0.7;
+}
+
+.check-icon {
+  display: inline-block;
+  margin-left: 10rpx;
+  font-weight: bold;
+  color: #07c160;
+}
+
+.vote-status {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+  text-align: center;
+}
+
+.status-text {
+  color: #666;
+}
+
+.voted-team {
+  color: #07c160;
+  font-weight: bold;
+}
+
+/* 比赛结果样式 */
+.result-section {
+  margin-top: 40rpx;
+  text-align: center;
+  padding: 30rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.result-title {
+  font-size: 32rpx;
+  color: #444;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.result-desc {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 15rpx;
+}
+
+.result-winner {
+  font-size: 30rpx;
+  color: #ff7f50;
+  font-weight: bold;
+  display: block;
+}
+
+/* 返回按钮 */
+.back-btn {
+  margin: 40rpx auto 0;
+  width: 80%;
+  background-color: #40a9ff;
+  color: #fff;
+  font-size: 28rpx;
+  padding: 15rpx 0;
+}
+
+/* 错误状态样式 */
+.error-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100rpx;
+  padding: 40rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.error-text {
+  font-size: 32rpx;
+  color: #ff4d4f;
+  margin-top: 20rpx;
+  font-weight: bold;
+}
+
+.error-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin: 20rpx 0;
+}
+
+.error-msg {
+  font-size: 24rpx;
+  color: #666;
+  margin: 10rpx 0 30rpx;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* 调试信息样式 */
+.debug-info {
+  margin-top: 40rpx;
+  padding: 20rpx;
+  background-color: #f0f0f0;
+  border-radius: 8rpx;
+  border: 1px dashed #999;
+}
+
+.debug-text {
+  font-size: 24rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.vote-progress {
+  width: 100%;
+  padding: 20rpx 30rpx;
+  margin-top: 20rpx;
+}
+
+.progress-bar {
+  display: flex;
+  height: 60rpx;
+  border-radius: 30rpx;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.progress-team1 {
+  background: #2196f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24rpx;
+  min-width: 80rpx;
+  transition: flex 0.3s ease;
+}
+
+.progress-team2 {
+  background: #e91e63;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24rpx;
+  min-width: 80rpx;
+  transition: flex 0.3s ease;
+}
+
+.vote-count {
+  padding: 0 10rpx;
+  font-weight: bold;
+}

@@ -1,0 +1,91 @@
+<view class="container">
+  <view class="main">
+    <view class="title">比赛列表</view>
+    
+    <!-- 日期选择器 -->
+    <scroll-view class="date-selector" scroll-x="true" scroll-into-view="{{currentDateId}}">
+      <view class="date-item {{selectedDate === 'all' ? 'selected' : ''}}" bindtap="selectDate" data-date="all" id="date-all">
+        <text>All</text>
+      </view>
+      <block wx:for="{{dateList}}" wx:key="date">
+        <view class="date-item {{selectedDate === item.date ? 'selected' : ''}}" bindtap="selectDate" data-date="{{item.date}}" id="date-{{item.date}}">
+          <text class="weekday">{{item.weekday}}</text>
+          <text class="date">{{item.displayDate}}</text>
+        </view>
+      </block>
+    </scroll-view>
+    
+    <view class="match-list">
+      <block wx:for="{{filteredMatches}}" wx:key="_id">
+        <view class="match-item" id="match-{{item._id}}">
+          <view class="match-header">
+            <text class="match-time">{{item.date}}</text>
+            <view class="status-badge {{item.status === '已结束' ? 'status-finished' : item.status === '正在直播' ? 'status-live' : 'status-upcoming'}}">
+              <text>{{item.status}}</text>
+            </view>
+          </view>
+          
+          <view class="match-content">
+            <view class="match-title">{{item.title || '比赛'}}</view>
+            
+            <view class="teams-container">
+              <view class="team-info">
+                <view class="team-logo team1-color {{item.status === '已结束' && item.result.winner === item.team1._id ? 'winner-team' : ''}}">
+                  <text>{{item.team1.name[0] || 'A'}}</text>
+                  <view class="vote-mark" wx:if="{{item.votedTeam === item.team1._id}}">✓</view>
+                </view>
+                <text class="team-name {{item.status === '已结束' && item.result.winner === item.team1._id ? 'winner-highlight' : ''}}">{{item.team1.name || '队伍A'}}</text>
+              </view>
+              
+              <text class="vs">VS</text>
+              
+              <view class="team-info">
+                <view class="team-logo team2-color {{item.status === '已结束' && item.result.winner === item.team2._id ? 'winner-team' : ''}}">
+                  <text>{{item.team2.name[0] || 'B'}}</text>
+                  <view class="vote-mark" wx:if="{{item.votedTeam === item.team2._id}}">✓</view>
+                </view>
+                <text class="team-name {{item.status === '已结束' && item.result.winner === item.team2._id ? 'winner-highlight' : ''}}">{{item.team2.name || '队伍B'}}</text>
+              </view>
+            </view>
+
+            <!-- 比赛结果或投票区域 -->
+            <block wx:if="{{item.status === '已结束'}}">
+              <view class="match-result">
+                <text class="score">{{item.result.score1 || 0}} : {{item.result.score2 || 0}}</text>
+                <view class="winner-info" wx:if="{{item.result.winner}}">
+                  <text class="winner-text">获胜方: {{item.result.winner === item.team1._id ? item.team1.name : item.team2.name}}</text>
+                </view>
+              </view>
+            </block>
+            <block wx:else>
+              <!-- 投票进度条 -->
+              <view class="vote-progress" wx:if="{{item.team1Votes > 0 || item.team2Votes > 0}}">
+                <view class="progress-bar">
+                  <view class="progress-team1" style="flex: {{item.team1Votes}}">
+                    <text class="vote-count">{{item.team1Votes}}票</text>
+                  </view>
+                  <view class="progress-team2" style="flex: {{item.team2Votes}}">
+                    <text class="vote-count">{{item.team2Votes}}票</text>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 投票按钮 -->
+              <view class="vote-buttons" wx:if="{{!item.votedTeam}}">
+                <button class="vote-btn" bindtap="submitVote" data-match-id="{{item._id}}" data-team-id="{{item.team1._id}}">
+                  投票给 {{item.team1.name}}
+                </button>
+                <button class="vote-btn" bindtap="submitVote" data-match-id="{{item._id}}" data-team-id="{{item.team2._id}}">
+                  投票给 {{item.team2.name}}
+                </button>
+              </view>
+              <view class="vote-hint" wx:else>
+                <text>您已投票给: {{item.votedTeam === item.team1._id ? item.team1.name : item.team2.name}}</text>
+              </view>
+            </block>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,109 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile-container">
+  <!-- 顶部用户信息 -->
+  <view class="user-info-card">
+    <view class="user-avatar" bindtap="chooseAvatar">
+      <image wx:if="{{avatarUrl}}" class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
+      <text wx:else class="avatar-text">{{nickname[0]}}</text>
+      <view class="avatar-edit-icon">
+        <text class="edit-icon">📷</text>
+      </view>
+    </view>
+    <view class="user-details">
+      <text class="user-nickname">{{nickname}}</text>
+      <text class="user-id">ID: {{userId}}</text>
+    </view>
+  </view>
+  
+  <!-- 投票统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-header">
+      <text class="stats-title">投票统计</text>
+    </view>
+    <view class="stats-content">
+      <view class="stat-item">
+        <text class="stat-value">{{votingStats.totalVotes}}</text>
+        <text class="stat-label">总投票数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{votingStats.correctPredictions}}</text>
+        <text class="stat-label">正确预测</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{votingStats.accuracy}}%</text>
+        <text class="stat-label">准确率</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 标签栏 -->
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="0">
+      投票历史
+    </view>
+    <view class="tab-item {{activeTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-index="1">
+      个人设置
+    </view>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading">加载中...</view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:elif="{{error}}">
+    <view class="error-message">{{error}}</view>
+    <button class="retry-btn" bindtap="loadUserData">重试</button>
+  </view>
+  
+  <!-- 投票历史内容 -->
+  <view class="tab-content" wx:elif="{{activeTab === 0}}">
+    <view class="empty-message" wx:if="{{voteHistory.length === 0}}">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无投票记录</text>
+      <text class="empty-desc">参与比赛投票后，这里将显示您的投票历史</text>
+    </view>
+    
+    <scroll-view scroll-y="true" class="vote-history-list" wx:else>
+      <view class="vote-item" wx:for="{{voteHistory}}" wx:key="_id">
+        <view class="vote-match-info">
+          <text class="vote-match-title">{{item.matchTitle}}</text>
+          <text class="vote-match-teams">{{item.team1}} VS {{item.team2}}</text>
+        </view>
+        
+        <view class="vote-details">
+          <view class="vote-team">
+            投票: <text class="team-name {{item.teamId === item.result.winner ? 'team1' : 'team2'}}">{{item.teamName}}</text>
+          </view>
+          
+          <view class="vote-result" wx:if="{{item.matchStatus === '已结束' || item.matchStatus === 'FINISHED'}}">
+            <text class="result-text {{item.isCorrect ? 'correct' : 'wrong'}}">
+              {{item.isCorrect ? '✓ 预测正确' : '✗ 预测错误'}}
+            </text>
+          </view>
+          <view class="vote-status" wx:else>
+            <text class="status-text">{{item.matchStatus}}</text>
+          </view>
+        </view>
+        
+        <text class="vote-time">{{item.voteTime}}</text>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 个人设置内容 -->
+  <view class="tab-content" wx:elif="{{activeTab === 1}}">
+    <view class="settings-form">
+      <view class="form-item">
+        <text class="form-label">昵称</text>
+        <input class="form-input" value="{{nickname}}" placeholder="请输入昵称" bindblur="updateNickname"/>
+      </view>
+      
+      <view class="form-item">
+        <text class="form-label">用户ID</text>
+        <text class="form-value">{{userId}}</text>
+      </view>
+    </view>
+  </view>
+</view>

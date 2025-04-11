@@ -1,0 +1,47 @@
+<!--pages/match/match.wxml-->
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 非加载状态显示内容 -->
+  <block wx:else>
+    <!-- 添加测试按钮 -->
+    <view class="debug-section">
+      <button wx:if="{{firstMatchId}}" bindtap="debugGoToVote" class="debug-btn" data-id="{{firstMatchId}}">
+        点击测试投票功能 (ID: {{firstMatchId}})
+      </button>
+    </view>
+
+    <view class="match-list">
+      <view class="match-item" wx:for="{{matches}}" wx:key="_id" bindtap="goToVote" data-id="{{item._id}}">
+        <view class="match-header">
+          <text class="match-title">{{item.title}}</text>
+          <text class="match-time">{{item.matchTime}}</text>
+        </view>
+        
+        <view class="teams">
+          <view class="team">
+            <text class="team-name">{{item.team1}}</text>
+          </view>
+          <text class="vs">VS</text>
+          <view class="team">
+            <text class="team-name">{{item.team2}}</text>
+          </view>
+        </view>
+
+        <view class="match-status {{item.status === '未开始' ? 'not-started' : item.status === '进行中' ? 'in-progress' : 'finished'}}">
+          <text>{{item.status}}</text>
+        </view>
+        
+        <view class="match-score" wx:if="{{item.team1Score !== undefined || item.team2Score !== undefined}}">
+          <text class="score-text">{{item.team1Score}} : {{item.team2Score}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{!loading && matches.length === 0}}">
+      <text>暂无比赛</text>
+    </view>
+  </block>
+</view>

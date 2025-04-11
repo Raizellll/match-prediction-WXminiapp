@@ -1,0 +1,141 @@
+<!--pages/match-edit/match-edit.wxml-->
+<view class="match-edit-container">
+  <!-- 头部标题 -->
+  <view class="header">
+    <view class="title">{{isEditing ? '编辑比赛' : '添加比赛'}}</view>
+  </view>
+
+  <!-- 表单内容 -->
+  <scroll-view scroll-y="true" class="form-scroll">
+    <view class="form-content">
+      <!-- 比赛标题 -->
+      <view class="form-item">
+        <view class="form-label">比赛标题</view>
+        <view class="title-input-container">
+          <input class="form-input" value="{{matchData.title}}" placeholder="请输入比赛标题" bindinput="onTitleInput" bindfocus="onTitleFocus"/>
+          <!-- 标题建议下拉框 -->
+          <view class="title-suggestions" wx:if="{{showTitleSuggestions}}">
+            <view 
+              class="suggestion-item" 
+              wx:for="{{titleSuggestions}}" 
+              wx:key="*this" 
+              bindtap="selectTitleSuggestion" 
+              data-title="{{item}}">
+              {{item}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 比赛日期 -->
+      <view class="form-item">
+        <view class="form-label">比赛日期</view>
+        <picker mode="date" value="{{matchData.date}}" start="2020-01-01" end="2030-12-31" bindchange="onDateChange">
+          <view class="picker-wrapper">
+            <view class="picker-value">{{matchData.date || '请选择日期'}}</view>
+            <view class="picker-arrow">▼</view>
+          </view>
+        </picker>
+      </view>
+      
+      <!-- 比赛时间 -->
+      <view class="form-item">
+        <view class="form-label">比赛时间</view>
+        <picker mode="time" value="{{matchData.time}}" bindchange="onTimeChange">
+          <view class="picker-wrapper">
+            <view class="picker-value">{{matchData.time || '请选择时间'}}</view>
+            <view class="picker-arrow">▼</view>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 比赛状态 -->
+      <view class="form-item">
+        <view class="form-label">比赛状态</view>
+        <picker bindchange="onStatusChange" value="{{statusIndex}}" range="{{statusOptions}}">
+          <view class="picker-wrapper">
+            <view class="picker-value">{{matchData.status || '请选择状态'}}</view>
+            <view class="picker-arrow">▼</view>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 队伍1 -->
+      <view class="form-section">
+        <view class="section-title">队伍 1</view>
+        
+        <view class="form-item">
+          <view class="form-label">队伍名称</view>
+          <input class="form-input" value="{{matchData.team1.name}}" placeholder="请输入队伍名称" bindinput="onTeam1NameInput"/>
+        </view>
+        
+        <view class="form-item">
+          <view class="form-label">队伍简介</view>
+          <textarea class="form-textarea" value="{{matchData.team1.description}}" placeholder="请输入队伍简介" bindinput="onTeam1DescInput"/>
+        </view>
+      </view>
+
+      <!-- 队伍2 -->
+      <view class="form-section">
+        <view class="section-title">队伍 2</view>
+        
+        <view class="form-item">
+          <view class="form-label">队伍名称</view>
+          <input class="form-input" value="{{matchData.team2.name}}" placeholder="请输入队伍名称" bindinput="onTeam2NameInput"/>
+        </view>
+        
+        <view class="form-item">
+          <view class="form-label">队伍简介</view>
+          <textarea class="form-textarea" value="{{matchData.team2.description}}" placeholder="请输入队伍简介" bindinput="onTeam2DescInput"/>
+        </view>
+      </view>
+
+      <!-- 比赛结果（仅当状态为已结束时显示） -->
+      <view class="form-section result-section" wx:if="{{matchData.status === '已结束' || matchData.status === 'FINISHED'}}">
+        <view class="section-title">比赛结果</view>
+        
+        <view class="form-item">
+          <view class="form-label">获胜方</view>
+          <radio-group class="radio-group" bindchange="onWinnerChange">
+            <label class="radio-label">
+              <radio value="{{matchData.team1._id || 'team1'}}" checked="{{matchData.result.winner === (matchData.team1._id || 'team1')}}"/>
+              <text class="radio-text">{{matchData.team1.name || '队伍1'}}</text>
+            </label>
+            <label class="radio-label">
+              <radio value="{{matchData.team2._id || 'team2'}}" checked="{{matchData.result.winner === (matchData.team2._id || 'team2')}}"/>
+              <text class="radio-text">{{matchData.team2.name || '队伍2'}}</text>
+            </label>
+          </radio-group>
+        </view>
+        
+        <view class="form-item">
+          <view class="form-label">比分</view>
+          <view class="score-input-container">
+            <input class="score-input" type="number" value="{{matchData.result.score1}}" placeholder="队伍1得分" bindinput="onScore1Input"/>
+            <text class="score-separator">:</text>
+            <input class="score-input" type="number" value="{{matchData.result.score2}}" placeholder="队伍2得分" bindinput="onScore2Input"/>
+          </view>
+        </view>
+        
+        <view class="form-item">
+          <view class="form-label">结果描述</view>
+          <textarea class="form-textarea" value="{{matchData.result.description}}" placeholder="请输入比赛结果描述" bindinput="onResultDescInput"/>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 底部操作按钮 -->
+  <view class="action-buttons">
+    <button class="cancel-btn" bindtap="onCancel">取消</button>
+    <button class="save-btn" bindtap="onSave">保存</button>
+  </view>
+  
+  <!-- 加载状态覆盖层 -->
+  <view class="loading-overlay" wx:if="{{saving}}">
+    <view class="loading-content">
+      <view class="loading-icon"></view>
+      <view class="loading-text">保存中...</view>
+    </view>
+  </view>
+</view>

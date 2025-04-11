@@ -1,0 +1,101 @@
+<!--pages/ranking/ranking.wxml-->
+<view class="ranking-container">
+  <!-- 标题 -->
+  <view class="ranking-header">
+    <view class="title-wrapper">
+      <text class="title-decoration">🏆</text>
+      <text class="ranking-title">谁是预测王?!</text>
+      <text class="title-decoration">🏆</text>
+    </view>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading">加载中...</view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:elif="{{error}}">
+    <view class="error-message">{{error}}</view>
+    <button class="retry-btn" bindtap="loadRankings">重试</button>
+  </view>
+  
+  <!-- 排名内容 -->
+  <block wx:elif="{{userRankings.length > 0}}">
+    <!-- TOP 3 区域 -->
+    <scroll-view scroll-y="true" class="ranking-scroll">
+      <view class="top-rankers">
+        <view class="rank-bg"></view>
+        
+        <!-- 第2名 -->
+        <view class="rank-item-top rank-2" wx:if="{{userRankings.length > 1}}">
+          <view class="rank-number">2</view>
+          <view class="user-avatar">
+            <image wx:if="{{userRankings[1].avatarUrl}}" class="avatar-image" src="{{userRankings[1].avatarUrl}}" mode="aspectFill"></image>
+            <text wx:else class="avatar-placeholder">{{userRankings[1].nickname[0]}}</text>
+          </view>
+          <view class="user-name">{{userRankings[1].nickname}}</view>
+          <view class="accuracy-value">{{userRankings[1].accuracy}}%</view>
+          <view class="user-count" wx:if="{{userRankings[1].totalCount > 0}}">{{userRankings[1].correctCount}}/{{userRankings[1].totalCount}}</view>
+          <view class="user-count" wx:else>0/0</view>
+        </view>
+        
+        <!-- 第1名 -->
+        <view class="rank-item-top rank-1" wx:if="{{userRankings.length > 0}}">
+          <view class="rank-crown">👑</view>
+          <view class="rank-number">1</view>
+          <view class="user-avatar">
+            <image wx:if="{{userRankings[0].avatarUrl}}" class="avatar-image" src="{{userRankings[0].avatarUrl}}" mode="aspectFill"></image>
+            <text wx:else class="avatar-placeholder">{{userRankings[0].nickname[0]}}</text>
+          </view>
+          <view class="user-name">{{userRankings[0].nickname}}</view>
+          <view class="accuracy-value">{{userRankings[0].accuracy}}%</view>
+          <view class="user-count" wx:if="{{userRankings[0].totalCount > 0}}">{{userRankings[0].correctCount}}/{{userRankings[0].totalCount}}</view>
+          <view class="user-count" wx:else>0/0</view>
+        </view>
+        
+        <!-- 第3名 -->
+        <view class="rank-item-top rank-3" wx:if="{{userRankings.length > 2}}">
+          <view class="rank-number">3</view>
+          <view class="user-avatar">
+            <image wx:if="{{userRankings[2].avatarUrl}}" class="avatar-image" src="{{userRankings[2].avatarUrl}}" mode="aspectFill"></image>
+            <text wx:else class="avatar-placeholder">{{userRankings[2].nickname[0]}}</text>
+          </view>
+          <view class="user-name">{{userRankings[2].nickname}}</view>
+          <view class="accuracy-value">{{userRankings[2].accuracy}}%</view>
+          <view class="user-count" wx:if="{{userRankings[2].totalCount > 0}}">{{userRankings[2].correctCount}}/{{userRankings[2].totalCount}}</view>
+          <view class="user-count" wx:else>0/0</view>
+        </view>
+      </view>
+      
+      <!-- 其他排名列表标题 -->
+      <view class="other-title" wx:if="{{userRankings.length > 3}}">
+        其他排名
+      </view>
+      
+      <!-- 其他排名列表 -->
+      <view class="other-rankers">
+        <view class="rank-item-list" wx:for="{{userRankings}}" wx:key="userId" wx:if="{{index > 2}}">
+          <view class="rank-number-list">{{item.rank}}</view>
+          <view class="user-avatar-list">
+            <image wx:if="{{item.avatarUrl}}" class="avatar-image-list" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+            <text wx:else class="avatar-placeholder-list">{{item.nickname[0]}}</text>
+          </view>
+          <view class="user-info-list">
+            <view class="user-name-list">{{item.nickname}}</view>
+            <view class="user-stats-list" wx:if="{{item.totalCount > 0}}">{{item.correctCount}}/{{item.totalCount}}</view>
+            <view class="user-stats-list" wx:else>0/0</view>
+          </view>
+          <view class="accuracy-value-list">{{item.accuracy}}%</view>
+        </view>
+      </view>
+    </scroll-view>
+  </block>
+  
+  <!-- 空数据提示 -->
+  <view class="empty-message" wx:else>
+    <text class="empty-icon">📊</text>
+    <text class="empty-text">暂无排名数据</text>
+    <text class="empty-desc">当用户预测比赛结果后，这里将显示准确率排行</text>
+  </view>
+</view>
