@@ -343,13 +343,46 @@ Page({
           return;
         }
 
-        // 添加投票记录
-        return db.collection('votes').add({
-          data: {
-            matchId: matchId,
-            userId: userId,
-            teamId: teamId,
-            createTime: db.serverDate()
+        // 检查并确保用户信息存在于数据库
+        return db.collection('users').where({
+          userId: userId
+        }).get().then(userRes => {
+          if (userRes.data.length === 0) {
+            // 如果用户不存在，先创建用户记录
+            const nickname = wx.getStorageSync(`nickname_${userId}`) || `用户${userId.substring(userId.length - 4)}`;
+            const avatarUrl = wx.getStorageSync(`avatar_${userId}`) || '';
+            
+            console.log('创建新用户记录:', userId);
+            return db.collection('users').add({
+              data: {
+                userId: userId,
+                nickname: nickname,
+                avatarUrl: avatarUrl,
+                createTime: db.serverDate()
+              }
+            }).then(() => {
+              console.log('用户信息保存成功');
+              // 继续添加投票
+              return db.collection('votes').add({
+                data: {
+                  matchId: matchId,
+                  userId: userId,
+                  teamId: teamId,
+                  createTime: db.serverDate()
+                }
+              });
+            });
+          } else {
+            console.log('用户已存在:', userRes.data[0]);
+            // 用户已存在，直接添加投票
+            return db.collection('votes').add({
+              data: {
+                matchId: matchId,
+                userId: userId,
+                teamId: teamId,
+                createTime: db.serverDate()
+              }
+            });
           }
         });
       })

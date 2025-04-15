@@ -544,18 +544,32 @@ Page({
   // 更新现有比赛
   updateMatch(matchData) {
     const db = wx.cloud.database();
+    const that = this;
     
-    return db.collection('matches').doc(this.data.matchId).update({
-      data: matchData
-    })
-    .then(res => {
-      console.log('更新比赛成功:', res);
+    // 先尝试通过云函数更新，绕过权限限制
+    wx.showLoading({
+      title: '保存中...',
+      mask: true
+    });
+    
+    // 记录原始状态，用于检查是否正确更新
+    const originalStatus = matchData.status;
+    console.log('准备更新比赛，状态:', originalStatus);
+    
+    return wx.cloud.callFunction({
+      name: 'updateMatch',
+      data: {
+        matchId: this.data.matchId,
+        matchData: matchData
+      }
+    }).then(result => {
+      console.log('通过云函数更新比赛:', result);
       
-      // 标记数据已更新，确保返回列表页时会刷新
+      wx.hideLoading();
+      
+      // 标记数据已更新
       const app = getApp();
       app.markDataUpdated('matches');
-      
-      // 额外设置一个直接的刷新标记
       wx.setStorageSync('forceRefreshIndexPage', true);
       
       // 保存标题到历史记录
@@ -566,14 +580,51 @@ Page({
         icon: 'success'
       });
       
-      // 延迟返回，让用户看到成功提示
+      // 延迟返回
       setTimeout(() => {
         wx.navigateBack();
       }, 1500);
-    })
-    .catch(err => {
-      console.error('更新比赛失败:', err);
-      throw err;
+      
+      return result;
+    }).catch(err => {
+      console.error('通过云函数更新比赛失败:', err);
+      
+      // 尝试直接更新数据库（此方法可能会因权限问题失败）
+      return db.collection('matches').doc(this.data.matchId).update({
+        data: matchData
+      }).then(res => {
+        console.log('直接更新比赛成功:', res);
+        
+        // 标记数据已更新
+        const app = getApp();
+        app.markDataUpdated('matches');
+        wx.setStorageSync('forceRefreshIndexPage', true);
+        
+        // 保存标题到历史记录
+        this.saveTitleToHistory(matchData.title);
+        
+        wx.hideLoading();
+        wx.showToast({
+          title: '更新成功',
+          icon: 'success'
+        });
+        
+        // 延迟返回
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 1500);
+        
+        return res;
+      }).catch(updateErr => {
+        console.error('所有更新方法均失败:', updateErr);
+        wx.hideLoading();
+        wx.showToast({
+          title: '更新失败，请重试',
+          icon: 'none'
+        });
+        that.setData({ saving: false });
+        throw updateErr;
+      });
     });
   }
 })

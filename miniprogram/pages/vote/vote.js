@@ -210,16 +210,64 @@ Page({
       mask: true
     });
 
-    // 添加投票记录
-    db.collection('votes').add({
-      data: {
-        matchId: this.data.currentMatchId,
-        userId: this.data.currentUserId,
-        teamId: teamId,
-        createTime: db.serverDate()
+    // 检查并确保用户信息存在于数据库
+    console.log('开始检查用户是否存在:', this.data.currentUserId);
+    db.collection('users').where({
+      userId: this.data.currentUserId
+    }).get().then(userRes => {
+      console.log('检查用户结果:', userRes.data);
+      if (userRes.data.length === 0) {
+        // 如果用户不存在，先创建用户记录
+        const nickname = wx.getStorageSync(`nickname_${this.data.currentUserId}`) || `用户${this.data.currentUserId.substring(this.data.currentUserId.length - 4)}`;
+        const avatarUrl = wx.getStorageSync(`avatar_${this.data.currentUserId}`) || '';
+        
+        console.log('创建新用户记录:', this.data.currentUserId, '昵称:', nickname);
+        return db.collection('users').add({
+          data: {
+            userId: this.data.currentUserId,
+            nickname: nickname,
+            avatarUrl: avatarUrl,
+            createTime: db.serverDate(),
+            create_platform: '投票页'
+          }
+        }).then(res => {
+          console.log('创建用户记录成功:', res);
+          // 继续添加投票
+          return db.collection('votes').add({
+            data: {
+              matchId: this.data.currentMatchId,
+              userId: this.data.currentUserId,
+              teamId: teamId,
+              createTime: db.serverDate()
+            }
+          });
+        }).catch(err => {
+          console.error('创建用户记录失败，错误详情:', err);
+          // 尝试直接添加投票
+          return db.collection('votes').add({
+            data: {
+              matchId: this.data.currentMatchId,
+              userId: this.data.currentUserId,
+              teamId: teamId,
+              createTime: db.serverDate()
+            }
+          });
+        });
+      } else {
+        console.log('用户已存在:', userRes.data[0]);
+        // 用户已存在，直接添加投票
+        return db.collection('votes').add({
+          data: {
+            matchId: this.data.currentMatchId,
+            userId: this.data.currentUserId,
+            teamId: teamId,
+            createTime: db.serverDate()
+          }
+        });
       }
     })
-    .then(() => {
+    .then(res => {
+      console.log('投票添加成功:', res);
       // 标记数据已更新
       const app = getApp();
       if (app.markDataUpdated) {
@@ -236,11 +284,12 @@ Page({
       });
     })
     .catch(err => {
-      console.error('投票失败:', err);
+      console.error('投票过程失败，错误详情:', err);
       wx.hideLoading();
       wx.showToast({
-        title: '投票失败，请重试',
-        icon: 'none'
+        title: '投票失败，请重试 ' + (err.errMsg || ''),
+        icon: 'none',
+        duration: 3000
       });
     });
   },

@@ -4,6 +4,8 @@ if (typeof Trace === 'undefined' && typeof globalThis.Trace !== 'undefined') {
   const Trace = globalThis.Trace;
 }
 
+const imageOptimizer = require('../../utils/imageOptimizer');
+
 Page({
 
   /**
@@ -92,19 +94,50 @@ Page({
       wx.setStorageSync('userId', userId);
     }
     
-    // 获取用户昵称
+    // 先从本地获取用户信息
     let nickname = wx.getStorageSync(`nickname_${userId}`);
-    if (!nickname) {
-      nickname = `用户${userId.substring(userId.length - 4)}`;
-    }
-    
-    // 获取用户头像
     let avatarUrl = wx.getStorageSync(`avatar_${userId}`);
     
     this.setData({
       userId: userId,
-      nickname: nickname,
+      nickname: nickname || `用户${userId.substring(userId.length - 4)}`,
       avatarUrl: avatarUrl
+    });
+    
+    // 然后尝试从云数据库获取最新信息
+    const db = wx.cloud.database();
+    db.collection('users').where({
+      userId: userId
+    }).get().then(res => {
+      if (res.data.length > 0) {
+        const userInfo = res.data[0];
+        
+        // 更新本地存储
+        if (userInfo.nickname) {
+          wx.setStorageSync(`nickname_${userId}`, userInfo.nickname);
+        }
+        if (userInfo.avatarUrl) {
+          wx.setStorageSync(`avatar_${userId}`, userInfo.avatarUrl);
+        }
+        
+        // 更新页面数据
+        this.setData({
+          nickname: userInfo.nickname || this.data.nickname,
+          avatarUrl: userInfo.avatarUrl || this.data.avatarUrl
+        });
+      } else if (nickname || avatarUrl) {
+        // 如果云端没有但本地有数据，添加到云数据库
+        db.collection('users').add({
+          data: {
+            userId: userId,
+            nickname: nickname || `用户${userId.substring(userId.length - 4)}`,
+            avatarUrl: avatarUrl || '',
+            createTime: new Date()
+          }
+        });
+      }
+    }).catch(err => {
+      console.error('获取用户云端信息失败:', err);
     });
     
     this.loadUserData();
@@ -384,15 +417,112 @@ Page({
       return;
     }
     
+    // 本地存储
     wx.setStorageSync(`nickname_${this.data.userId}`, nickname);
     
-    this.setData({
-      nickname: nickname
+    wx.showLoading({
+      title: '保存中...',
+      mask: true
     });
     
-    wx.showToast({
-      title: '昵称已更新',
-      icon: 'success'
+    // 使用云函数更新用户信息
+    wx.cloud.callFunction({
+      name: 'updateUserProfile',
+      data: {
+        userId: this.data.userId,
+        nickname: nickname
+      }
+    }).then(res => {
+      console.log('更新用户资料成功:', res);
+      
+      if (res.result && res.result.success) {
+        this.setData({
+          nickname: nickname
+        });
+        
+        wx.hideLoading();
+        wx.showToast({
+          title: '昵称已更新',
+          icon: 'success'
+        });
+        
+        // 标记数据已更新，通知其他页面刷新
+        const app = getApp();
+        if (app && app.markDataUpdated) {
+          app.markDataUpdated('users');
+        }
+      } else {
+        throw new Error(res.result && res.result.message || '更新失败');
+      }
+    }).catch(err => {
+      console.error('调用云函数更新昵称失败:', err);
+      
+      // 尝试直接通过数据库更新 - 降级方案
+      this.fallbackUpdateNickname(nickname);
+    });
+  },
+  
+  // 降级方案 - 直接通过客户端更新数据库
+  fallbackUpdateNickname(nickname) {
+    console.log('使用降级方案更新昵称');
+    const db = wx.cloud.database();
+    
+    db.collection('users').where({
+      userId: this.data.userId
+    }).get().then(res => {
+      console.log('查询用户信息结果:', res.data);
+      if (res.data.length > 0) {
+        // 更新已有记录
+        console.log('更新现有用户记录:', res.data[0]._id);
+        return db.collection('users').doc(res.data[0]._id).update({
+          data: {
+            nickname: nickname,
+            updateTime: db.serverDate()
+          }
+        }).then(updateRes => {
+          console.log('更新用户信息成功:', updateRes);
+          return { success: true };
+        });
+      } else {
+        // 创建新记录
+        console.log('创建新用户记录:', this.data.userId);
+        return db.collection('users').add({
+          data: {
+            userId: this.data.userId,
+            nickname: nickname,
+            avatarUrl: this.data.avatarUrl || '',
+            createTime: db.serverDate()
+          }
+        }).then(addRes => {
+          console.log('添加用户信息成功:', addRes);
+          return { success: true };
+        });
+      }
+    }).then(result => {
+      if (result.success) {
+        this.setData({
+          nickname: nickname
+        });
+        
+        wx.hideLoading();
+        wx.showToast({
+          title: '昵称已更新',
+          icon: 'success'
+        });
+        
+        // 标记数据已更新，通知其他页面刷新
+        const app = getApp();
+        if (app && app.markDataUpdated) {
+          app.markDataUpdated('users');
+        }
+      }
+    }).catch(err => {
+      console.error('保存用户信息到云数据库失败:', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: '保存失败，请重试',
+        icon: 'none'
+      });
     });
   },
   
@@ -406,56 +536,107 @@ Page({
   chooseAvatar() {
     const that = this;
     
-    // 选择图片
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: function(res) {
-        const tempFilePath = res.tempFilePaths[0];
-        console.log('选择的图片:', tempFilePath);
-        
-        wx.showLoading({
-          title: '上传中...',
-          mask: true
-        });
-        
-        // 上传到云存储
-        that.uploadToCloud(tempFilePath);
-      },
-      fail: function(err) {
-        console.error('选择图片失败:', err);
+    // 使用图片优化工具上传并压缩头像
+    imageOptimizer.uploadAndCompress({
+      quality: 80,
+      width: 300, // 头像尺寸限制在300px
+      format: 'webp'
+    })
+    .then(fileID => {
+      if (!fileID) {
+        throw new Error('未获取到有效的文件ID');
       }
-    });
-  },
-  
-  // 上传图片到云存储
-  uploadToCloud(filePath) {
-    const that = this;
-    const cloudPath = `avatars/${this.data.userId}_${Date.now()}${filePath.match(/\.[^.]+?$/)[0]}`;
-    
-    wx.cloud.uploadFile({
-      cloudPath: cloudPath,
-      filePath: filePath,
-      success: res => {
-        console.log('上传成功，文件ID:', res.fileID);
+      
+      console.log('头像上传并优化成功:', fileID);
+      
+      // 保存头像URL到本地
+      wx.setStorageSync(`avatar_${that.data.userId}`, fileID);
+      
+      // 使用云函数更新用户信息
+      return wx.cloud.callFunction({
+        name: 'updateUserProfile',
+        data: {
+          userId: that.data.userId,
+          avatarUrl: fileID
+        }
+      }).then(updateRes => {
+        console.log('通过云函数更新头像成功:', updateRes);
         
-        // 保存头像URL
-        wx.setStorageSync(`avatar_${that.data.userId}`, res.fileID);
+        if (updateRes.result && updateRes.result.success) {
+          that.setData({
+            avatarUrl: fileID
+          });
+          
+          wx.showToast({
+            title: '头像已更新',
+            icon: 'success'
+          });
+          
+          // 标记数据已更新，通知其他页面刷新
+          const app = getApp();
+          if (app && app.markDataUpdated) {
+            app.markDataUpdated('users');
+          }
+        } else {
+          return Promise.reject(new Error(updateRes.result && updateRes.result.message || '更新失败'));
+        }
+      });
+    })
+    .catch(err => {
+      console.error('头像更新失败:', err);
+      
+      // 如果是云函数更新失败，尝试降级方案
+      if (err.message === '更新失败') {
+        const fileID = wx.getStorageSync(`avatar_${that.data.userId}`);
+        if (!fileID) {
+          wx.showToast({
+            title: '更新失败，请重试',
+            icon: 'none'
+          });
+          return;
+        }
         
-        that.setData({
-          avatarUrl: res.fileID
+        // 降级方案 - 直接通过客户端更新
+        const db = wx.cloud.database();
+        db.collection('users').where({
+          userId: that.data.userId
+        }).get().then(userRes => {
+          if (userRes.data.length > 0) {
+            // 更新已有记录
+            return db.collection('users').doc(userRes.data[0]._id).update({
+              data: {
+                avatarUrl: fileID,
+                updateTime: db.serverDate()
+              }
+            });
+          } else {
+            // 创建新记录
+            return db.collection('users').add({
+              data: {
+                userId: that.data.userId,
+                nickname: that.data.nickname,
+                avatarUrl: fileID,
+                createTime: db.serverDate()
+              }
+            });
+          }
+        }).then(() => {
+          that.setData({
+            avatarUrl: fileID
+          });
+          
+          wx.showToast({
+            title: '头像已更新',
+            icon: 'success'
+          });
+        }).catch(dbErr => {
+          console.error('保存头像到云数据库失败:', dbErr);
+          wx.showToast({
+            title: '保存失败，请重试',
+            icon: 'none'
+          });
         });
-        
-        wx.hideLoading();
-        wx.showToast({
-          title: '头像已更新',
-          icon: 'success'
-        });
-      },
-      fail: err => {
-        console.error('上传失败:', err);
-        wx.hideLoading();
+      } else {
         wx.showToast({
           title: '上传失败，请重试',
           icon: 'none'
