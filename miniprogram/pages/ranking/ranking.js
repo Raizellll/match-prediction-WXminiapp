@@ -33,8 +33,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 每次显示页面时刷新排行榜
-    this.loadRankings();
+    // 每次显示页面时，强制刷新排行榜，不使用缓存
+    console.log('排行榜页面显示，强制刷新数据');
+    wx.showLoading({
+      title: '加载数据...',
+      mask: true
+    });
+    this.loadRankings(true);
   },
 
   /**
@@ -55,7 +60,9 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh() {
-    this.loadRankings();
+    // 下拉刷新时，强制刷新排行榜
+    console.log('排行榜下拉刷新，强制刷新数据');
+    this.loadRankings(true);
     wx.stopPullDownRefresh();
   },
 
@@ -74,14 +81,22 @@ Page({
   },
 
   // 加载排行榜数据
-  loadRankings() {
-    console.log('开始加载排行榜数据');
+  loadRankings(forceRefresh = false) {
+    console.log('开始加载排行榜数据, 强制刷新:', forceRefresh);
     this.setData({ loading: true, error: null });
     
-    this.loadUserRankings()
+    // 如果强制刷新，清除相关缓存
+    if (forceRefresh) {
+      console.log('清除排行榜相关缓存');
+      wx.removeStorageSync('rankingData');
+      wx.removeStorageSync('rankingLastUpdate');
+    }
+    
+    this.loadUserRankings(forceRefresh)
       .then(() => {
         console.log('排行榜数据加载完成，总用户数:', this.data.userRankings.length);
         this.setData({ loading: false });
+        wx.hideLoading();
       })
       .catch(error => {
         console.error('加载排行榜失败:', error);
@@ -89,11 +104,13 @@ Page({
           loading: false,
           error: '加载数据失败，请稍后再试'
         });
+        wx.hideLoading();
       });
   },
 
   // 加载用户排名
-  loadUserRankings() {
+  loadUserRankings(forceRefresh = false) {
+    console.log('加载用户排名, 强制刷新:', forceRefresh);
     const db = wx.cloud.database();
     const _ = db.command;
     
@@ -101,7 +118,7 @@ Page({
       // 获取所有已结束的比赛 - 匹配多种可能的状态表示
       this.getAllFinishedMatches()
         .then(finishedMatches => {
-          console.log('找到的已结束比赛:', finishedMatches);
+          console.log('找到的已结束比赛:', finishedMatches.length, '场');
           
           if (finishedMatches.length === 0) {
             console.log('没有找到已结束的比赛');
@@ -112,10 +129,13 @@ Page({
             return resolve();
           }
           
-          // 获取所有用户的投票 - 使用云函数
-          console.log('使用云函数获取所有投票记录');
+          // 获取所有用户的投票 - 使用云函数并传递forceRefresh参数
+          console.log('使用云函数获取所有投票记录, 强制刷新:', forceRefresh);
           wx.cloud.callFunction({
-            name: 'getAllVotes'
+            name: 'getAllVotes',
+            data: {
+              forceRefresh: forceRefresh
+            }
           }).then(res => {
             if (!res.result || !res.result.success) {
               console.error('云函数返回错误:', res.result);
@@ -168,6 +188,7 @@ Page({
               const userVoteList = userVotes[userId];
               let correctCount = 0;
               let totalCount = 0;
+              const allVotesCount = userVoteList.length; // 记录所有投票数量
               
               userVoteList.forEach(vote => {
                 // 只统计已结束的比赛
@@ -201,13 +222,14 @@ Page({
                 }
               });
               
-              console.log(`用户 ${userId} 统计: 正确 ${correctCount}/${totalCount}`);
+              console.log(`用户 ${userId} 统计: 正确 ${correctCount}/${totalCount}, 总投票: ${allVotesCount}`);
               
               // 无论是否有参与已结束比赛，都添加到排行榜
               userStats.push({
                 userId: userId,
                 correctCount: correctCount,
-                totalCount: totalCount,
+                finishedCount: totalCount, // 改名为已结束比赛数
+                totalCount: allVotesCount, // 添加总投票数
                 accuracy: totalCount > 0 ? (correctCount / totalCount * 100).toFixed(2) : "0.00"
               });
             }
@@ -443,12 +465,12 @@ Page({
           return user;
         });
         
-        // 过滤出投票数量大于6的用户
+        // 过滤出总投票数量大于6的用户，不再仅基于已结束比赛
         const filteredUsers = updatedUsers.filter(user => {
           return user.totalCount > 6;
         });
         
-        console.log(`过滤后剩余${filteredUsers.length}名用户（投票数>6）`);
+        console.log(`过滤后剩余${filteredUsers.length}名用户（总投票>6）`);
         
         // 重新计算排名
         filteredUsers.forEach((user, index) => {
@@ -488,12 +510,12 @@ Page({
             return user;
           });
           
-          // 过滤出投票数量大于6的用户
+          // 过滤出总投票数量大于6的用户，不再仅基于已结束比赛
           const filteredUsers = updatedUsers.filter(user => {
             return user.totalCount > 6;
           });
           
-          console.log(`过滤后剩余${filteredUsers.length}名用户（投票数>6）`);
+          console.log(`过滤后剩余${filteredUsers.length}名用户（总投票>6）`);
           
           // 重新计算排名
           filteredUsers.forEach((user, index) => {
@@ -514,12 +536,12 @@ Page({
             return user;
           });
           
-          // 过滤出投票数量大于6的用户
+          // 过滤出总投票数量大于6的用户，不再仅基于已结束比赛
           const filteredUsers = updatedUsers.filter(user => {
             return user.totalCount > 6;
           });
           
-          console.log(`过滤后剩余${filteredUsers.length}名用户（投票数>6）`);
+          console.log(`过滤后剩余${filteredUsers.length}名用户（总投票>6）`);
           
           // 重新计算排名
           filteredUsers.forEach((user, index) => {

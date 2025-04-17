@@ -174,6 +174,20 @@
   font-weight: bold;
 }
 
+.user-count {
+  font-size: 24rpx;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.total-votes-text {
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
 /* 其他排名标题 */
 .other-title {
   font-size: 32rpx;
@@ -246,12 +260,15 @@
 .user-stats-list {
   font-size: 24rpx;
   color: #999;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.accuracy-value-list {
-  font-size: 32rpx;
-  color: #f57c00;
-  font-weight: bold;
+.total-votes-small {
+  font-size: 20rpx;
+  color: #999;
+  margin-left: 6rpx;
 }
 
 /* 空数据提示 */

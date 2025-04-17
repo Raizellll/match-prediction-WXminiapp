@@ -36,7 +36,10 @@
           </view>
           <view class="user-name">{{userRankings[1].nickname}}</view>
           <view class="accuracy-value">{{userRankings[1].accuracy}}%</view>
-          <view class="user-count" wx:if="{{userRankings[1].totalCount > 0}}">{{userRankings[1].correctCount}}/{{userRankings[1].totalCount}}</view>
+          <view class="user-count" wx:if="{{userRankings[1].finishedCount > 0}}">
+            {{userRankings[1].correctCount}}/{{userRankings[1].finishedCount}}
+            <text class="total-votes-text">(总投票:{{userRankings[1].totalCount}})</text>
+          </view>
           <view class="user-count" wx:else>0/0</view>
         </view>
         
@@ -50,7 +53,10 @@
           </view>
           <view class="user-name">{{userRankings[0].nickname}}</view>
           <view class="accuracy-value">{{userRankings[0].accuracy}}%</view>
-          <view class="user-count" wx:if="{{userRankings[0].totalCount > 0}}">{{userRankings[0].correctCount}}/{{userRankings[0].totalCount}}</view>
+          <view class="user-count" wx:if="{{userRankings[0].finishedCount > 0}}">
+            {{userRankings[0].correctCount}}/{{userRankings[0].finishedCount}}
+            <text class="total-votes-text">(总投票:{{userRankings[0].totalCount}})</text>
+          </view>
           <view class="user-count" wx:else>0/0</view>
         </view>
         
@@ -63,7 +69,10 @@
           </view>
           <view class="user-name">{{userRankings[2].nickname}}</view>
           <view class="accuracy-value">{{userRankings[2].accuracy}}%</view>
-          <view class="user-count" wx:if="{{userRankings[2].totalCount > 0}}">{{userRankings[2].correctCount}}/{{userRankings[2].totalCount}}</view>
+          <view class="user-count" wx:if="{{userRankings[2].finishedCount > 0}}">
+            {{userRankings[2].correctCount}}/{{userRankings[2].finishedCount}}
+            <text class="total-votes-text">(总投票:{{userRankings[2].totalCount}})</text>
+          </view>
           <view class="user-count" wx:else>0/0</view>
         </view>
       </view>
@@ -83,8 +92,11 @@
           </view>
           <view class="user-info-list">
             <view class="user-name-list">{{item.nickname}}</view>
-            <view class="user-stats-list" wx:if="{{item.totalCount > 0}}">{{item.correctCount}}/{{item.totalCount}}</view>
-            <view class="user-stats-list" wx:else>0/0</view>
+            <view class="user-stats-list">
+              <text wx:if="{{item.finishedCount > 0}}">{{item.correctCount}}/{{item.finishedCount}}</text>
+              <text wx:else>0/0</text>
+              <text class="total-votes-small">(总:{{item.totalCount}})</text>
+            </view>
           </view>
           <view class="accuracy-value-list">{{item.accuracy}}%</view>
         </view>
