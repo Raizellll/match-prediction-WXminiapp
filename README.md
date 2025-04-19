@@ -89,7 +89,7 @@ miniprogram-2/
 
 1. 克隆代码库
    ```bash
-   git clone [项目Git地址]
+   git clone https://github.com/Raizellll/match-prediction-WXminiapp.git
    ```
 
 2. 使用微信开发者工具打开项目
