@@ -1,8 +1,5 @@
 # 预测王 - 赛事预测小程序
 
-<p align="center">
-  <img src="miniprogram/images/logo.png" alt="预测王Logo" width="200" />
-</p>
 
 ## 项目概述
 
